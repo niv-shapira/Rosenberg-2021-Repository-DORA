@@ -393,7 +393,8 @@ def PlotMazeNodes(m,numcol='blue',figsize=6):
     numcol: color for the numbers. If numcol is None the numbers are omitted
     figsize: in inches
     '''
-    PlotMazeFunction(None,m,mode='nodes',numcol=numcol,figsize=figsize,col=None)
+    ax = PlotMazeFunction(None,m,mode='nodes',numcol=numcol,figsize=figsize,col=None)
+    plt.savefig('outdata_for-paper/maze.pdf',bbox_inches="tight")
     
 def NodeLevel(n):
     '''
