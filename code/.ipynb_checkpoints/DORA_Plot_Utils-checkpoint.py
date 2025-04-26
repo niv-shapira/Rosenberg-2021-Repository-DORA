@@ -203,7 +203,6 @@ def PlotTopology4(names, fstr, params, fixed_params):
     
     all_ces = np.divide(all_ces, len(names))
 
-    
     fixed_indices = {'beta': fixed_params[0], 'gamma': fixed_params[1], 'eta': fixed_params[2], 'delta': fixed_params[3]}  # Adjust as needed
     
     fig,axes = plt.subplots(2,3,figsize=(12, 8))
@@ -289,4 +288,25 @@ def PlotTopology1(names, fstr, params, fixed_params, gamma_name):
     fig.text(0.5,-0.05,text,horizontalalignment='center') # add parameter values text
 
     return fig,axes
+
+def PlotTopologyRand(names, fstr, params, fixed_params):
+    betas,gammas,etas,deltas = params
+    all_ces = np.vectorize(ExtractValues)(np.load(EvalStr(fstr,names[0]), allow_pickle=True))
+    for nickname in names[1:]:
+        all_ces += np.vectorize(ExtractValues)(np.load(EvalStr(fstr,nickname), allow_pickle=True))
+    
+    all_ces = np.divide(all_ces, len(names))
+    
+    fig,ax = plt.subplots()
+    
+    X, Y = np.meshgrid(deltas, betas[:13])
+    Z = all_ces[:13, 0, 0, :]
+    ax.contourf(X, Y, Z)
+    ax.set_xlabel('delta')
+    ax.set_ylabel('beta')
+    cntr1 = ax.contourf(X, Y, Z)
+    
+    fig.colorbar(cntr1, ax=ax, orientation='horizontal', fraction=0.05, pad=0.15)
+
+    return fig,ax
     

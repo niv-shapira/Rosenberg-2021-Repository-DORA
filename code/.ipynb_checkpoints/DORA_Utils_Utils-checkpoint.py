@@ -165,7 +165,7 @@ def NewEndNodes(da):
         w=np.array([])
     else:
         w=np.array([]); c=np.array([]); n=np.array([])
-    wcn=np.array([w,c,n])
+    wcn=np.asanyarray([w,c,n], dtype=object)
     return wcn
 
 def NewNodesBiggerThanPercent(names,percent):

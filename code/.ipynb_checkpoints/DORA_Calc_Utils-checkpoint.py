@@ -423,7 +423,7 @@ def OutCEsNamesParams(Names,params,ma,mode,frame=1,url=None):
     for nickname,thisparams in zip(Names,params):
         ces += [GetCEs(nickname,thisparams,ma,mode,frame)]
     if url:
-        np.save(url,ces) # save cross-entropy values to file
+        np.save(url,np.asanyarray(ces, dtype=object)) # save cross-entropy values to file
     return ces
 
 def GetMin(ces,maxsteps=-1,indices=()):
@@ -590,5 +590,5 @@ def GetMinArgList(Names,fstr_load,parameters,frame,percent=-1,avg=False):
         res = GetMin(ces,steps)
         min_arr += [res[arg]]
         arg_min_arr += [ConvertIndicesToParameters(res[arg+1],parameters)] # get parameters that minimize average cross-entropy
-        
-    return min_arr, arg_min_arr
+
+    return np.asanyarray([min_arr, arg_min_arr], dtype=object)
