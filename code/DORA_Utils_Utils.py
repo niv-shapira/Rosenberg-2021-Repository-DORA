@@ -174,5 +174,5 @@ def NewNodesBiggerThanPercent(names,percent):
         tf = LoadTraj(nickname+'-tf') # load trajectory data
         dte = np.concatenate([b[:-2,0] for b in tf.no]) # test states
         _,newnodes = NewNodes(dte) # calculate new nodes
-        steps += [np.where(np.array(newnodes) >= percent * 126)[0][0]]
+        steps += [np.where(np.array(newnodes) >= percent * NUM_OF_NODES)[0][0]]
     return steps

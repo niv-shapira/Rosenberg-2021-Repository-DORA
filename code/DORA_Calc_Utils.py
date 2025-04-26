@@ -592,3 +592,21 @@ def GetMinArgList(Names,fstr_load,parameters,frame,percent=-1,avg=False):
         arg_min_arr += [ConvertIndicesToParameters(res[arg+1],parameters)] # get parameters that minimize average cross-entropy
 
     return np.asanyarray([min_arr, arg_min_arr], dtype=object)
+
+def GetLeftRightBias(nickname, ma, maxsteps=-1):
+    tf=LoadTraj(nickname+'-tf') # load trajectory data
+    da=np.concatenate([b[:-2,0] for b in tf.no]) # test states
+    if maxsteps != -1:
+        da = da[:maxsteps]
+    lrsteps = 0
+    lsteps = 0
+    for i,sn in enumerate(da):
+        if i+1 < len(da):
+            sn1 = da[i+1] # next state
+            a = GetActionFromStates(sn,sn1,ma) # get action from current and next state
+
+            if a != 0:
+                lrsteps += 1
+                lsteps += a % 2
+
+    return lsteps / lrsteps
