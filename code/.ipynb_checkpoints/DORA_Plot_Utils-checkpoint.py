@@ -74,6 +74,8 @@ def PlotMin(names,params,param_names,src_ce,fstr_sim,eff):
     ce_rand = -np.log2(1/3) # random policy cross-entropy
             
     for ce,ce_bouts,color,nickname,thisparams in zip(ces,ces_bouts,colors,names,params):
+        ce_bouts = np.array(ce_bouts)
+        ce_bouts = ce_bouts[ce_bouts > AZERO]
         # 0: NEW NODES
         tf = LoadTraj(nickname+'-tf') # load trajectory data
         dte = np.concatenate([b[:-2,0] for b in tf.no]) # test states
@@ -97,9 +99,6 @@ def PlotMin(names,params,param_names,src_ce,fstr_sim,eff):
         # 1.1: CE Bouts:
         x = range(len(ce_bouts)) # limit x-axis values
         y = ce_bouts
-        X_Y_Spline = make_interp_spline(x, y)
-        X_ = np.linspace(np.array(x).min(), np.array(x).max(), 1000)
-        Y_ = X_Y_Spline(X_)
         
         axes[2,0].plot(x,y,color=color,label=nickname,linewidth=0.5)
         

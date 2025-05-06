@@ -498,7 +498,7 @@ def GetCEs(nickname,params,ma,test=True):
     
     # Create mask for actions to include in analysis
     # All actions are included except the very first one
-    mte=np.array([True]+[True,]*(len(dte)-1))
+    mte=np.array([False]+[True,]*(len(dte)-1))
     
     # Exclude actions from terminal nodes (states > 62)
     mte[np.where(dte[:-1]>62)[0]]=False
