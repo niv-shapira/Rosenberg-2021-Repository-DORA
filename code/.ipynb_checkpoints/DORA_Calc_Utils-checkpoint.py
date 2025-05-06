@@ -333,7 +333,7 @@ def GetEfficiency(names,fstr):
     return eff
 
 
-def CalcCEsStep(da,mk,E,params,sta,ma,mode):
+def CalcCEsStep(da,mk,E,params,sta,ma):
     '''
     Calculate cross-entropy step by step
     
@@ -344,7 +344,6 @@ def CalcCEsStep(da,mk,E,params,sta,ma,mode):
     params (list): List containing [beta, gamma, eta, delta]
     sta (numpy.ndarray): Node child matrix
     ma (object): Maze object
-    mode (int): Simulation mode
     
     Returns:
     tuple: (ces, ces_bouts)
