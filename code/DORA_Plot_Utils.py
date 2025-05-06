@@ -64,17 +64,16 @@ def PlotMult(Names,fstr,parameters,frame):
 
     return fig,axs
 
-def PlotMinAtPercent(names,params,param_names,src_ce,fstr_sim,eff,percent=1):
-    fig, axes = plt.subplots(2,2,figsize=(8, 8), gridspec_kw={'width_ratios': [0.6, 0.4], 'height_ratios': [0.5, 0.5]})
+def PlotMin(names,params,param_names,src_ce,fstr_sim,eff):
+    fig, axes = plt.subplots(3,2,figsize=(12, 8), gridspec_kw={'width_ratios': [0.6, 0.4], 'height_ratios': [0.5, 0.5, 0.5]})
     
-    ces = np.load(src_ce, allow_pickle=True)
+    ces,ces_bouts = np.load(src_ce, allow_pickle=True)
         
     text = f"({','.join(param_names)})" +'\n' # text for parameter values 
     colors = cm.rainbow(np.linspace(0, 1, len(ces))) # colors for mouse names
     ce_rand = -np.log2(1/3) # random policy cross-entropy
-    maxsteps = NewNodesBiggerThanPercent(names,percent)
             
-    for ce,color,nickname,thisparams,maxstep in zip(ces,colors,names,params,maxsteps):
+    for ce,ce_bouts,color,nickname,thisparams in zip(ces,ces_bouts,colors,names,params):
         # 0: NEW NODES
         tf = LoadTraj(nickname+'-tf') # load trajectory data
         dte = np.concatenate([b[:-2,0] for b in tf.no]) # test states
@@ -85,7 +84,6 @@ def PlotMinAtPercent(names,params,param_names,src_ce,fstr_sim,eff,percent=1):
         Y_ = X_Y_Spline(X_)
         
         axes[0,0].plot(X_,Y_,color=color,linewidth=1,label=nickname) # plot new nodes
-        axes[0,0].axvline(x=maxstep, linestyle=':', color=color)
         
         # 1: CEs
         x = range(len(ce)) # limit x-axis values
@@ -95,7 +93,15 @@ def PlotMinAtPercent(names,params,param_names,src_ce,fstr_sim,eff,percent=1):
         Y_ = X_Y_Spline(X_)
         
         axes[1,0].plot(X_,Y_,color=color,label=nickname,linewidth=1)
-        axes[1,0].axvline(x=maxstep, linestyle=':', color=color)
+
+        # 1.1: CE Bouts:
+        x = range(len(ce_bouts)) # limit x-axis values
+        y = ce_bouts
+        X_Y_Spline = make_interp_spline(x, y)
+        X_ = np.linspace(np.array(x).min(), np.array(x).max(), 1000)
+        Y_ = X_Y_Spline(X_)
+        
+        axes[2,0].plot(x,y,color=color,label=nickname,linewidth=0.5)
         
         # 2: SIM
         ## mouse
@@ -129,12 +135,18 @@ def PlotMinAtPercent(names,params,param_names,src_ce,fstr_sim,eff,percent=1):
     
     # 1: CEs
     axes[1,0].axhline(y=ce_rand, linestyle=':', color='k', label='Random') # plot random policy line
-    #axes[1,0].set_title('Cross-entropy loss using parameters for minimum at ' + str(int(percent*100)) +'%')
     axes[1,0].set_ylabel('Cross-entropy loss')
     axes[1,0].set_xlabel('Steps')
     axes[1,0].set_xscale('log')
-    axes[1,0].set_xlim([10,4000])
+    axes[1,0].set_xlim([10,10000])
     axes[1,0].legend(loc = 'lower right')
+
+    # 1.1: CE Bouts
+    axes[2,0].axhline(y=ce_rand, linestyle=':', color='k', label='Random') # plot random policy line
+    axes[2,0].set_ylabel('Cross-entropy loss')
+    axes[2,0].set_xlabel('Bouts')
+    axes[2,0].set_xlim([0,300])
+    axes[2,0].legend(loc = 'lower right')
     
     # 2: SIM
     ## optimal
@@ -149,7 +161,6 @@ def PlotMinAtPercent(names,params,param_names,src_ce,fstr_sim,eff,percent=1):
     y = wcn[2]
     axes[0,1].plot(x, y, '--k', linewidth=1.5, label='Random')
     
-    #axes[0,1].set_title('Efficiency using parameters for minimum at ' + str(int(percent*100)) +'%')
     axes[0,1].axhline(y=32, linestyle=':', color='k', label='32') # plot random policy line
     axes[0,1].set_ylabel('New end nodes found')
     axes[0,1].set_xlabel('End nodes visited')
@@ -180,6 +191,9 @@ def PlotMinAtPercent(names,params,param_names,src_ce,fstr_sim,eff,percent=1):
     
     letters = ['A', 'B', 'C', 'D']
     positions = [(0, 0), (1, 0), (0, 1), (1, 1)]
+
+    # REMOVE LAST SUBPLOTS
+    axes[2,1].axis('off')
 
     # ADD TITLES
     for letter, pos in zip(letters, positions):
